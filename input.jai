@@ -41,6 +41,9 @@ parse_event :: (ib: *Input_Buffer, e: Event) {
 }
 
 update_buffer :: (ib: *Input_Buffer($T), delta: float32) {
+    for event: events_this_frame {
+        parse_event(*buffer, event);
+    }
     for i: 0..ib.MAP_SIZE - 1 {
         ib.buffered[i] -= delta;
         if ib.buffered[i] < 0 {
