@@ -8,10 +8,20 @@ window: Window_Type;
 close_window: bool;
 last_time: float64;
 
+Action :: enum {
+    Jump;
+    Kick;
+    Roll;
+    Dive;
+    Shoot;
+}
+
+buffer: Input_Buffer(Action);
+
 main :: () {
     init_window();
-    print("Hello\n");
 
+    register_input(*buffer, .Jump, .SPACEBAR);
     while !close_window {
         update_window_events();
         now := seconds_since_init();
@@ -30,6 +40,14 @@ init_window :: () {
 }
 
 update :: (delta: float32) {
+    for event: events_this_frame {
+        parse_event(*buffer, event);
+    }
+    update_buffer(*buffer, delta);
+    if is_action_buffered(*buffer, .Jump) {
+        consume_action(*buffer, .Jump);
+        print("JUMPED!!\n");
+    }
 }
 
 render :: () {

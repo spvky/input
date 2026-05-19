@@ -22,9 +22,8 @@ register_input :: (ib: *Input_Buffer($T), action: T, key_code: Key_Code) {
 
 parse_event :: (ib: *Input_Buffer, e: Event) {
     for i: 0..ib.MAP_SIZE - 1 {
-        kc := event.Key_Code;
-        if ib.map[i] == kc {
-            if event.key_pressed {
+        if ib.map[i] == e.key_code {
+            if e.key_pressed {
                 // Pressed Key
                 ib.held[i] = true;
                 if ib.buffered[i] == -1 {
@@ -45,7 +44,11 @@ update_buffer :: (ib: *Input_Buffer($T), delta: float32) {
     for i: 0..ib.MAP_SIZE - 1 {
         ib.buffered[i] -= delta;
         if ib.buffered[i] < 0 {
-            ib.buffered[i] = -1;
+            if ib.held[i] {
+                ib.buffered[i] = 0;
+            } else {
+                ib.buffered[i] = -1;
+            }
         }
         ib.released[i] -= delta;
         if ib.released[i] < 0 {
@@ -58,6 +61,10 @@ update_buffer :: (ib: *Input_Buffer($T), delta: float32) {
     }
 }
 
+is_action_buffered :: (ib: *Input_Buffer($T), action: T) -> bool {
+    return ib.buffered[action] > 0;
+}
+
 consume_action :: (ib: *Input_Buffer($T), action: T) {
-    ib.buffered[action] = -1;
+    ib.buffered[action] = 0;
 }
