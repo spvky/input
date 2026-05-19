@@ -1,9 +1,3 @@
-#import "Input";
-#import "Simp";
-#import "Window_Creation";
-#import "Basic";
-#import "GetRect";
-
 window: Window_Type;
 close_window: bool;
 last_time: float64;
@@ -20,6 +14,12 @@ buffer: Input_Buffer(Action);
 
 main :: () {
     init_window();
+
+    raw_ti := type_info(Action);
+    ti := cast(*Type_Info_Enum)raw_ti;
+    for ti.names {
+        print("%\n", it);
+    }
 
     register_input(*buffer, .Jump, .SPACEBAR);
     while !close_window {
@@ -51,5 +51,22 @@ render :: () {
     clear_render_target(0.3, 0.1, 0.4, 1);
     swap_buffers(window);
 }
+
+draw_ui :: () {
+    //  ti := cast(*Type_Info_Enum)type_info(Action);
+    for i: 0..buffer.MAP_SIZE - 1 {
+        name := tprint("%", cast(i)Action);
+        map := buffer.map[i];
+        buffer_value := buffer.buffered[i];
+        held := buffer.held[i];
+        released := buffer.released[i];
+    }
+}
+
+#import "Input";
+#import "Simp";
+#import "Window_Creation";
+#import "Basic";
+#import "GetRect";
 
 #load "input.jai";
