@@ -9,7 +9,7 @@ Input_Buffer :: struct($ACTION: Type)
         info := (cast(*Type_Info_Enum)ACTION);
         return info.values.count;
     }
-    buffer_length: float32 = 0.2;
+    buffer_length: float32 = 0.25;
     map: [MAP_SIZE]Key_Code;
     buffered: [MAP_SIZE]float32;
     held: [MAP_SIZE]bool;
@@ -20,21 +20,22 @@ register_input :: (ib: *Input_Buffer($T), action: T, key_code: Key_Code) {
     ib.map[action] = key_code;
 }
 
-parse_event :: (ib: *Input_Buffer, e: Event) {
+parse_event :: (ib: *Input_Buffer($T), e: Event) {
     for i: 0..ib.MAP_SIZE - 1 {
         if ib.map[i] == e.key_code {
             if e.key_pressed {
                 // Pressed Key
                 ib.held[i] = true;
-                if ib.buffered[i] == -1 {
+                if ib.buffered[i] <= -1 {
                     ib.buffered[i] = ib.buffer_length;
                 }
             } else {
                 // Released Key
                 ib.held[i] = false;
-                if ib.released[i] == -1 {
+                if ib.released[i] <= -1 {
                     ib.released[i] = ib.buffer_length;
                 }
+                ib.buffered[i] = -1;
             }
         }
     }
