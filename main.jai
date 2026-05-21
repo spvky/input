@@ -13,6 +13,7 @@ Action :: enum {
 buffer: Input_Buffer(Action);
 my_theme: Overall_Theme;
 font: *Dynamic_Font;
+player_height: f32;
 
 main :: () {
     init_window();
@@ -28,6 +29,7 @@ main :: () {
     }
 
     register_input(*buffer, .Jump, .SPACEBAR);
+    register_input(*buffer, .Kick, #char "K");
     while !close_window {
         update_window_events();
         now := seconds_since_init();

@@ -17,12 +17,12 @@ Input_Buffer :: struct($ACTION: Type)
 }
 
 register_input :: (ib: *Input_Buffer($T), action: T, key_code: Key_Code) {
-    ib.map[action] = key_code;
+    ib.map[action] = xx key_code;
 }
 
 parse_event :: (ib: *Input_Buffer($T), e: Event) {
     for i: 0..ib.MAP_SIZE - 1 {
-        if ib.map[i] == e.key_code {
+        if ib.map[i] == xx e.key_code {
             if e.key_pressed {
                 // Pressed Key
                 ib.held[i] = true;
@@ -42,9 +42,6 @@ parse_event :: (ib: *Input_Buffer($T), e: Event) {
 }
 
 update_buffer :: (ib: *Input_Buffer($T), delta: float32) {
-    for event: events_this_frame {
-        parse_event(*buffer, event);
-    }
     for i: 0..ib.MAP_SIZE - 1 {
         ib.buffered[i] -= delta;
         if ib.buffered[i] < 0 {
