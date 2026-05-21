@@ -24,9 +24,9 @@ main :: () {
     raw_ti := type_info(Action);
     ti := cast(*Type_Info_Enum)raw_ti;
 
-    init_input_buffer();
-    register_input(.Jump, .SPACEBAR);
-    register_input(.Kick, #char "K");
+    InputBuffer.init_input_buffer();
+    InputBuffer.register_input(.Jump, .SPACEBAR);
+    InputBuffer.register_input(.Kick, #char "K");
     while !close_window {
         update_window_events();
         now := seconds_since_init();
@@ -45,8 +45,8 @@ init_window :: () {
 }
 
 update :: (delta: float32) {
-    update_buffer(delta);
-    if is_action_buffered(.Jump) {
+    InputBuffer.update_buffer(delta);
+    if InputBuffer.is_action_buffered(.Jump) {
         // consume_action( .Jump);
         // print("JUMPED!!\n");
     }
@@ -92,4 +92,4 @@ draw_ui :: () {
 #import "Basic";
 #import "GetRect";
 
-#import,file "../module.jai"(ACTION_TYPE = Action);
+InputBuffer :: #import,file "../module.jai"(ACTION_TYPE = Action);
