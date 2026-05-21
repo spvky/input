@@ -10,7 +10,6 @@ Action :: enum {
     Shoot;
 }
 
-buffer: Input_Buffer(Action);
 my_theme: Overall_Theme;
 font: *Dynamic_Font;
 player_height: float32;
@@ -25,8 +24,9 @@ main :: () {
     raw_ti := type_info(Action);
     ti := cast(*Type_Info_Enum)raw_ti;
 
-    register_input(*buffer, .Jump, .SPACEBAR);
-    register_input(*buffer, .Kick, #char "K");
+    init_input_buffer();
+    register_input(.Jump, .SPACEBAR);
+    register_input(.Kick, #char "K");
     while !close_window {
         update_window_events();
         now := seconds_since_init();
@@ -45,9 +45,9 @@ init_window :: () {
 }
 
 update :: (delta: float32) {
-    update_buffer(*buffer, delta);
-    if is_action_buffered(*buffer, .Jump) {
-        // consume_action(*buffer, .Jump);
+    update_buffer(delta);
+    if is_action_buffered(.Jump) {
+        // consume_action( .Jump);
         // print("JUMPED!!\n");
     }
 }
@@ -65,17 +65,17 @@ draw_ui :: () {
     my_theme = proc();
     set_default_theme(my_theme);
     y_pos: float32 = 800;
-    for i: 0..buffer.MAP_SIZE - 1 {
+    for i: 0..context.input_buffer.MAP_SIZE - 1 {
         x_pos: float32 = (xx i * (320.0)) + 20;
         name := tprint("%", cast(Action)i);
-        map := buffer.map[i];
-        buffer_value := buffer.buffered[i];
-        held := buffer.held[i];
-        released := buffer.released[i];
+        map := context.input_buffer.map[i];
+        buffer_value := context.input_buffer.buffered[i];
+        held := context.input_buffer.held[i];
+        released := context.input_buffer.released[i];
 
         label_rect := get_rect(x_pos, y_pos, 300, 40);
         buffer_rect := get_rect(x_pos, y_pos - 100, 300, 40);
-        buffer_percent: float32 = clamp(buffer_value / buffer.buffer_length, 0, 1);
+        buffer_percent: float32 = clamp(buffer_value / context.input_buffer.buffer_length, 0, 1);
         current_buffer_width: float32 = (buffer_percent * buffer_gauge_width) - 4;
 
         immediate_quad(.{x_pos, y_pos - 40}, .{x_pos + buffer_gauge_width, y_pos - 40}, .{x_pos + buffer_gauge_width, y_pos}, .{x_pos, y_pos}, .{1, 1, 1, 0.3});
@@ -92,4 +92,4 @@ draw_ui :: () {
 #import "Basic";
 #import "GetRect";
 
-#load "../module.jai";
+#import,file "../module.jai"(ACTION_TYPE = Action);

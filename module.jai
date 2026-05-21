@@ -1,3 +1,5 @@
+#module_parameters(ACTION_TYPE: Type);
+
 Input_Buffer :: struct($ACTION: Type)
 #modify {
     info := (cast(*Type_Info_Enum)ACTION);
@@ -16,12 +18,28 @@ Input_Buffer :: struct($ACTION: Type)
     released: [MAP_SIZE]float32;
 }
 
-register_input :: (ib: *Input_Buffer($T), action: T, key_code: Key_Code) {
+#add_context input_buffer: *Input_Buffer(ACTION_TYPE);
+
+init_input_buffer :: () {
+    if !context.input_buffer {
+        context.input_buffer = New(Input_Buffer(ACTION_TYPE));
+    }
+}
+
+delete_input_buffer :: () {
+    if context.input_buffer {
+        Delete(context.input_buffer);
+    }
+}
+
+register_input :: (action: ACTION_TYPE, key_code: Key_Code) {
+    ib := context.input_buffer;
     ib.map[action] = xx key_code;
 }
 
 // Reads over `Input.events_this_frame` to detect inputs and progresses Input_Buffer by delta
-update_buffer :: (ib: *Input_Buffer($T), delta: float32) {
+update_buffer :: (delta: float32) {
+    ib := context.input_buffer;
     for i: 0..ib.MAP_SIZE - 1 {
         ib.buffered[i] -= delta;
         if ib.buffered[i] < 0 {
@@ -38,20 +56,23 @@ update_buffer :: (ib: *Input_Buffer($T), delta: float32) {
     }
 
     for event: events_this_frame {
-        parse_event(ib, event);
+        parse_event(event);
     }
 }
 
-is_action_buffered :: (ib: *Input_Buffer($T), action: T) -> bool {
+is_action_buffered :: (action: ACTION_TYPE) -> bool {
+    ib := context.input_buffer;
     return ib.buffered[action] > 0;
 }
 
-consume_action :: (ib: *Input_Buffer($T), action: T) {
+consume_action :: (action: ACTION_TYPE) {
+    ib := context.input_buffer;
     ib.buffered[action] = 0;
 }
 
 #scope_module
-parse_event :: (ib: *Input_Buffer($T), e: Event) {
+parse_event :: (e: Event) {
+    ib := context.input_buffer;
     for i: 0..ib.MAP_SIZE - 1 {
         if ib.map[i] == xx e.key_code {
             if e.key_pressed {
@@ -71,3 +92,6 @@ parse_event :: (ib: *Input_Buffer($T), e: Event) {
         }
     }
 }
+
+#import "Input";
+#import "Basic";
