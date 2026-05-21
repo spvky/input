@@ -24,9 +24,6 @@ main :: () {
 
     raw_ti := type_info(Action);
     ti := cast(*Type_Info_Enum)raw_ti;
-    for ti.names {
-        print("%\n", it);
-    }
 
     register_input(*buffer, .Jump, .SPACEBAR);
     register_input(*buffer, .Kick, #char "K");
@@ -95,4 +92,4 @@ draw_ui :: () {
 #import "Basic";
 #import "GetRect";
 
-#load "input.jai";
+#load "../module.jai";
