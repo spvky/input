@@ -21,12 +21,10 @@ main :: () {
     my_theme.font = font;
     my_theme.label_theme.font = font;
 
-    raw_ti := type_info(Action);
-    ti := cast(*Type_Info_Enum)raw_ti;
-
     InputBuffer.init_input_buffer();
     InputBuffer.register_input(.Jump, .SPACEBAR);
     InputBuffer.register_input(.Kick, #char "K");
+
     while !close_window {
         update_window_events();
         now := seconds_since_init();
