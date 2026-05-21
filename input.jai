@@ -20,27 +20,7 @@ register_input :: (ib: *Input_Buffer($T), action: T, key_code: Key_Code) {
     ib.map[action] = xx key_code;
 }
 
-parse_event :: (ib: *Input_Buffer($T), e: Event) {
-    for i: 0..ib.MAP_SIZE - 1 {
-        if ib.map[i] == xx e.key_code {
-            if e.key_pressed {
-                // Pressed Key
-                ib.held[i] = true;
-                if ib.buffered[i] <= -1 {
-                    ib.buffered[i] = ib.buffer_length;
-                }
-            } else {
-                // Released Key
-                ib.held[i] = false;
-                if ib.released[i] <= -1 {
-                    ib.released[i] = ib.buffer_length;
-                }
-                ib.buffered[i] = -1;
-            }
-        }
-    }
-}
-
+// Reads over `Input.events_this_frame` to detect inputs and progresses Input_Buffer by delta
 update_buffer :: (ib: *Input_Buffer($T), delta: float32) {
     for i: 0..ib.MAP_SIZE - 1 {
         ib.buffered[i] -= delta;
@@ -68,4 +48,26 @@ is_action_buffered :: (ib: *Input_Buffer($T), action: T) -> bool {
 
 consume_action :: (ib: *Input_Buffer($T), action: T) {
     ib.buffered[action] = 0;
+}
+
+#scope_module
+parse_event :: (ib: *Input_Buffer($T), e: Event) {
+    for i: 0..ib.MAP_SIZE - 1 {
+        if ib.map[i] == xx e.key_code {
+            if e.key_pressed {
+                // Pressed Key
+                ib.held[i] = true;
+                if ib.buffered[i] <= -1 {
+                    ib.buffered[i] = ib.buffer_length;
+                }
+            } else {
+                // Released Key
+                ib.held[i] = false;
+                if ib.released[i] <= -1 {
+                    ib.released[i] = ib.buffer_length;
+                }
+                ib.buffered[i] = -1;
+            }
+        }
+    }
 }
