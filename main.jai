@@ -13,7 +13,7 @@ Action :: enum {
 buffer: Input_Buffer(Action);
 my_theme: Overall_Theme;
 font: *Dynamic_Font;
-player_height: f32;
+player_height: float32;
 
 main :: () {
     init_window();
