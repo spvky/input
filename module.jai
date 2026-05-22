@@ -68,6 +68,11 @@ is_action_buffered :: (action: ACTION_TYPE) -> bool {
     return ib.buffered[action] > 0;
 }
 
+is_action_held :: (action: ACTION_TYPE) -> bool {
+    ib := context.input_buffer;
+    return ib.held[action];
+}
+
 consume_action :: (action: ACTION_TYPE) {
     ib := context.input_buffer;
     ib.buffered[action] = 0;
