@@ -73,6 +73,11 @@ is_action_held :: (action: ACTION_TYPE) -> bool {
     return ib.held[action];
 }
 
+set_capture_input :: (val: bool) {
+    ib := context.input_buffer;
+    ib.capture_input = val;
+}
+
 consume_action :: (action: ACTION_TYPE) {
     ib := context.input_buffer;
     ib.buffered[action] = 0;
