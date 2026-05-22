@@ -11,6 +11,7 @@ Input_Buffer :: struct($ACTION: Type)
         info := (cast(*Type_Info_Enum)ACTION);
         return info.values.count;
     }
+    capture_input: bool = true;
     buffer_length: float32 = 0.25;
     map: [MAP_SIZE]Key_Code;
     buffered: [MAP_SIZE]float32;
@@ -56,7 +57,9 @@ update_buffer :: (delta: float32) {
     }
 
     for event: events_this_frame {
-        parse_event(event);
+        if ib.capture_input {
+            parse_event(event);
+        }
     }
 }
 
